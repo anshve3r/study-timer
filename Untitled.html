@@ -1,0 +1,299 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Study Timer</title>
+
+<style>
+
+body{
+font-family:Arial;
+text-align:center;
+background:#0f1c2e;
+color:white;
+transition:0.3s;
+}
+
+.light{
+background:#f2f4f8;
+color:black;
+}
+
+.container{
+width:420px;
+margin:auto;
+padding:25px;
+background:#1b2b45;
+border-radius:12px;
+margin-top:30px;
+}
+
+.light .container{
+background:white;
+}
+
+.time{
+font-size:42px;
+margin:15px 0;
+}
+
+button{
+margin:5px;
+padding:10px 14px;
+border:none;
+border-radius:6px;
+cursor:pointer;
+background:#2f4a7d;
+color:white;
+}
+
+.light button{
+background:#4a6fc9;
+}
+
+.reset{
+background:#d9534f;
+}
+
+.section{
+margin-top:30px;
+}
+
+.stats{
+margin-top:15px;
+font-size:18px;
+color:#9ec3ff;
+}
+
+.light .stats{
+color:#3a5fd9;
+}
+
+.toggle{
+margin-top:20px;
+}
+
+</style>
+
+</head>
+<body>
+
+<h1>Study Timer</h1>
+
+<button class="toggle" onclick="toggleMode()">Toggle Dark / Light</button>
+
+<div class="container">
+
+<!-- POMODORO -->
+
+<div class="section">
+<h2>Pomodoro</h2>
+
+<div class="time" id="pomodoroDisplay">25:00</div>
+
+<button onclick="startPomodoro()">Start</button>
+<button onclick="pausePomodoro()">Pause</button>
+<button class="reset" onclick="resetPomodoro()">Reset</button>
+
+<div class="stats">
+Pomodoros completed: <span id="pomodoroCount">0</span>
+</div>
+
+</div>
+
+<hr>
+
+<!-- NORMAL TIMER -->
+
+<div class="section">
+
+<h2>Timers</h2>
+
+<div class="time" id="timerDisplay">00:00</div>
+
+<div>
+<button onclick="setTimer(30)">30s</button>
+<button onclick="setTimer(60)">1m</button>
+<button onclick="setTimer(300)">5m</button>
+<button onclick="setTimer(600)">10m</button>
+<button onclick="setTimer(900)">15m</button>
+<button onclick="setTimer(1500)">25m</button>
+<button onclick="setTimer(2400)">40m</button>
+<button onclick="setTimer(3600)">1h</button>
+</div>
+
+<button onclick="startTimer()">Start</button>
+<button onclick="pauseTimer()">Pause</button>
+<button class="reset" onclick="resetTimer()">Reset</button>
+
+</div>
+
+<hr>
+
+<!-- STOPWATCH -->
+
+<div class="section">
+
+<h2>Stopwatch</h2>
+
+<div class="time" id="stopwatchDisplay">00:00:00</div>
+
+<button onclick="startStopwatch()">Start</button>
+<button onclick="pauseStopwatch()">Pause</button>
+<button class="reset" onclick="resetStopwatch()">Reset</button>
+
+</div>
+
+</div>
+
+<script>
+
+/* DARK LIGHT MODE */
+
+function toggleMode(){
+document.body.classList.toggle("light")
+}
+
+/* ALARM */
+
+function playAlarm(){
+let audio = new Audio("https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg")
+audio.play()
+}
+
+/* POMODORO */
+
+let pomodoroTime = 1500
+let pomodoroInterval
+let pomodoroCount = 0
+
+function startPomodoro(){
+
+clearInterval(pomodoroInterval)
+
+pomodoroInterval = setInterval(()=>{
+if(pomodoroTime > 0){
+pomodoroTime--
+updatePomodoroDisplay()
+}else{
+clearInterval(pomodoroInterval)
+
+pomodoroCount++
+document.getElementById("pomodoroCount").textContent = pomodoroCount
+
+playAlarm()
+
+alert("Pomodoro finished! Take a break.")
+}
+},1000)
+}
+
+function pausePomodoro(){
+clearInterval(pomodoroInterval)
+}
+
+function resetPomodoro(){
+clearInterval(pomodoroInterval)
+pomodoroTime = 1500
+updatePomodoroDisplay()
+}
+
+function updatePomodoroDisplay(){
+
+let m = Math.floor(pomodoroTime/60)
+let s = pomodoroTime%60
+
+document.getElementById("pomodoroDisplay").textContent =
+String(m).padStart(2,"0")+":"+String(s).padStart(2,"0")
+
+}
+
+updatePomodoroDisplay()
+
+/* NORMAL TIMER */
+
+let timerSeconds = 0
+let timerInterval
+
+function setTimer(seconds){
+timerSeconds = seconds
+updateTimerDisplay()
+}
+
+function startTimer(){
+
+clearInterval(timerInterval)
+
+timerInterval = setInterval(()=>{
+if(timerSeconds>0){
+timerSeconds--
+updateTimerDisplay()
+}else{
+clearInterval(timerInterval)
+playAlarm()
+}
+},1000)
+}
+
+function pauseTimer(){
+clearInterval(timerInterval)
+}
+
+function resetTimer(){
+clearInterval(timerInterval)
+timerSeconds=0
+updateTimerDisplay()
+}
+
+function updateTimerDisplay(){
+
+let m=Math.floor(timerSeconds/60)
+let s=timerSeconds%60
+
+document.getElementById("timerDisplay").textContent=
+String(m).padStart(2,"0")+":"+String(s).padStart(2,"0")
+}
+
+/* STOPWATCH */
+
+let stopwatchTime=0
+let stopwatchInterval
+
+function startStopwatch(){
+
+clearInterval(stopwatchInterval)
+
+stopwatchInterval=setInterval(()=>{
+stopwatchTime++
+updateStopwatch()
+},1000)
+}
+
+function pauseStopwatch(){
+clearInterval(stopwatchInterval)
+}
+
+function resetStopwatch(){
+clearInterval(stopwatchInterval)
+stopwatchTime=0
+updateStopwatch()
+}
+
+function updateStopwatch(){
+
+let h=Math.floor(stopwatchTime/3600)
+let m=Math.floor((stopwatchTime%3600)/60)
+let s=stopwatchTime%60
+
+document.getElementById("stopwatchDisplay").textContent=
+String(h).padStart(2,"0")+":"+
+String(m).padStart(2,"0")+":"+
+String(s).padStart(2,"0")
+
+}
+
+</script>
+
+</body>
+</html>
